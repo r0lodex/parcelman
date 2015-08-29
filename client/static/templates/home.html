@@ -1,0 +1,13 @@
+<div ng-if="!loggedIn">
+    <div class="text-center">
+        <img src="static/img/logo.png" width="50px;">
+    </div>
+    <form id="login-form" name="loginForm" novalidate ng-submit="login(loginForm)">
+        <form-field placeholder="Username" fieldtype="text" field="username" object="auth" required="true"></form-field>
+        <form-field placeholder="Password" fieldtype="password" field="password" object="auth" required="true"></form-field>
+        <button type="submit" class="btn btn-primary btn-block">Login</button>
+    </form>
+    <div class="text-center text-muted">
+        <small>Parcelman &mdash; A Simple Parcel Manager &copy; 2015</small>
+    </div>
+</div>

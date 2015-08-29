@@ -16,5 +16,11 @@
     "bower_components",
     "test",
     "tests"
-  ]
+  ],
+  "dependencies": {
+    "dependencies": {
+    "angular-resource": "~1.4.5",
+    "bootstrap": "~4",
+    "angular-route": "~1.4.5"
+  }
 }
