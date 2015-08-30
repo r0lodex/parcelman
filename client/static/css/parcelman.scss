@@ -1,6 +1,6 @@
 @import "../../lib/bootstrap/scss/bootstrap";
 
-
+// Helpers
 .card-shadow {
     background: #FFF;
     border-radius: 5px;
@@ -8,6 +8,12 @@
     box-shadow: 0 2px 2px rgba(#000, 0.1);
 }
 
+.white-shadow {
+    background: #FFF;
+    box-shadow: 0 0 5px rgba(#000, 0.1);
+}
+
+//
 body {
     padding-top: 10px;
     background: lighten(#EAEAEA, 5%);
@@ -17,4 +23,16 @@ body {
     @extend .card-shadow;
     width: 350px;
     margin: 20px auto;
+}
+
+.content {
+    margin-top: 20px;
+}
+
+.navbar-brand {
+    span { margin-left: 10px; }
+    img {
+        height: 30px;
+        float: left;
+    }
 }

@@ -11,3 +11,21 @@
         <small>Parcelman &mdash; A Simple Parcel Manager &copy; 2015</small>
     </div>
 </div>
+<div ng-if="loggedIn">
+    <div class="row content">
+        <div class="col-md-4">
+            <div class="card white-shadow">
+                <div class="card-header">Register A Parcel</div>
+                <div class="card-block">
+                    <form id="parcel-form" name="parcelForm" novalidate ng-submit="addParcel(parcelForm)">
+                        <form-field placeholder="Receiver's Name" fieldtype="text" field="student_name" object="parcel" required="true"></form-field>
+                        <form-field placeholder="Parcel Type" fieldtype="dropdown" field="parcel_type" object="parcel" list="parcel_type" required="true"></form-field>
+                        <form-field placeholder="Tracking ID (Optional)" fieldtype="text" field="parcel" object="parcel" required="false"></form-field>
+                        <button class="btn btn-success" type="submit">Register</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">Received</div>
+    </div>
+</div>

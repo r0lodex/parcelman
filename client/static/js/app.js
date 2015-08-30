@@ -86,7 +86,7 @@ pman.factory('Parcels', ['$resource', function($resource) {
 pman.factory('AuthService', function(){
     return service = {
         login: function(id, token) {
-            var authdata = { id: id, token: token }
+            var authdata = { uid: id, token: token }
             sessionStorage.user = JSON.stringify(authdata);
         },
         logout: function() {
@@ -138,13 +138,17 @@ pman.controller('root', ['$scope', 'Auth', 'AuthService', function($scope, Auth,
             if (form.$invalid) {
                 $scope.$broadcast('field:invalid')
             } else {
-                $scope.loggedIn = true;
-                AuthService.login('id', 'token')
+                // $scope.loggedIn = true;
+                // AuthService.login('id', 'token')
 
-                // $scope.auth.$login(function(res) {
-                //     $scope.loggedIn = true;
-                //     AuthService.login(res.id, res.token)
-                // })
+                $scope.auth.$login(function(res) {
+                    if (res.id) {
+                        $scope.loggedIn = true;
+                        AuthService.login(res.id, res.token)
+                    } else {
+                        console.log('Error')
+                    }
+                })
             }
         }
 
@@ -160,12 +164,29 @@ pman.controller('root', ['$scope', 'Auth', 'AuthService', function($scope, Auth,
     }
 
 }])
-pman.controller('home', ['$scope', function($scope) {}])
-pman.controller('parcel', ['$scope', '$location', 'Parcels', function($scope, $location, Parcels) {
-    if (!sessionStorage.user) {
-        $location.path('/')
+pman.controller('home', ['$scope', 'Parcels', function($scope, Parcels) {
+    $scope.parcel_type = [
+        { name: 'Letter', id: 1 },
+        { name: 'Package', id: 2 }
+    ]
+
+    $scope.parcel = new Parcels({
+        student_name: '',
+        parcel_type: 1,
+        parcel: ''
+    })
+
+    $scope.addParcel = function(form) {
+        if (form.$invalid) {
+            $scope.$broadcast('field:invalid')
+        } else {
+            var a = JSON.parse(sessionStorage.user)
+            $scope.parcel.$create(a);
+        }
     }
+
 }])
+
 pman.controller('user', ['$scope', '$location', 'Users', function($scope, $location, Users) {
     if (!sessionStorage.user) {
         $location.path('/')
