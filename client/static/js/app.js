@@ -1,11 +1,15 @@
 // @codekit-prepend "../../lib/angular/angular.min.js";
 // @codekit-prepend "../../lib/angular-resource/angular-resource.min.js";
 // @codekit-prepend "../../lib/angular-route/angular-route.min.js";
+// @codekit-prepend "../../lib/angular-ui-notification/dist/angular-ui-notification.min.js";
+// @codekit-prepend "../../lib/moment/min/moment.min.js";
+// @codekit-prepend "../../lib/angular-moment/angular-moment.min.js";
+// @codekit-prepend "../../lib/angular-bootstrap/ui-bootstrap-tpls.min.js";
 
 // @codekit-append "../../lib/jquery/dist/jquery.min.js";
 // @codekit-append "../../lib/bootstrap/dist/js/bootstrap.min.js";
 
-var pman = angular.module('pman', ['ngResource', 'ngRoute']);
+var pman = angular.module('pman', ['ngResource', 'ngRoute', 'ui-notification', 'angularMoment', 'ui.bootstrap']);
 
 // SETTINGS ETC
 // ========================
@@ -35,7 +39,7 @@ pman.factory('sessionInjector', ['$q', '$rootScope', function($q, $rootScope) {
 }]);
 
 
-pman.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
+pman.config(['$routeProvider', '$locationProvider', 'NotificationProvider', function($routeProvider, $locationProvider, NotificationProvider) {
     $routeProvider
         .when('/', {
             controller: 'home',
@@ -53,18 +57,22 @@ pman.config(['$routeProvider', '$locationProvider', function($routeProvider, $lo
             redirectTo: '/'
         }
     );
+    NotificationProvider.setOptions({
+        positionX: 'left',
+        positionY: 'bottom'
+    });
 }]);
 
 // FACTORIES
 // ========================
 pman.factory('Auth', ['$resource', function($resource) {
-    return $resource('/server/api/login', {}, {
+    return $resource('../server/api/login', {}, {
         login: { method: 'POST', isArray: false }
     })
 }]);
 
 pman.factory('Users', ['$resource', function($resource) {
-    return $resource('/server/api/user/:id', { id: '@id' }, {
+    return $resource('../server/api/user/:id', { id: '@id' }, {
         query: { method: 'GET', isArray: true },
         create: { method: 'POST', isArray: false },
         update: { method: 'PUT', isArray: false },
@@ -73,7 +81,7 @@ pman.factory('Users', ['$resource', function($resource) {
 }]);
 
 pman.factory('Parcels', ['$resource', function($resource) {
-    return $resource('/server/api/parcel/:id', { id: '@id' }, {
+    return $resource('../server/api/parcel/:id', { id: '@id' }, {
         query: { method: 'GET', isArray: true },
         create: { method: 'POST', isArray: false },
         update: { method: 'PUT', isArray: false },
@@ -127,7 +135,7 @@ var error_handler = function(response) {
 }
 
 
-pman.controller('root', ['$scope', 'Auth', 'AuthService', function($scope, Auth, AuthService) {
+pman.controller('root', ['$scope', 'Auth', 'AuthService', 'Notification', function($scope, Auth, AuthService, Notification) {
     $scope.loggedIn = (sessionStorage.user) ? true:false;
     if (!$scope.loggedIn) {
         $scope.auth = new Auth({
@@ -146,6 +154,7 @@ pman.controller('root', ['$scope', 'Auth', 'AuthService', function($scope, Auth,
                         $scope.loggedIn = true;
                         AuthService.login(res.id, res.token)
                     } else {
+                        Notification.error({ message: 'Fuck you' })
                         console.log('Error')
                     }
                 })
@@ -163,8 +172,11 @@ pman.controller('root', ['$scope', 'Auth', 'AuthService', function($scope, Auth,
         window.location.reload();
     }
 
+    $scope.$on('parcel:added', function() {
+        Notification.success({ message: 'Parcel Added' })
+    })
 }])
-pman.controller('home', ['$scope', 'Parcels', function($scope, Parcels) {
+pman.controller('home', ['$scope', 'Parcels', '$modal', function($scope, Parcels, $modal) {
     $scope.parcel_type = [
         { name: 'Letter', id: 1 },
         { name: 'Package', id: 2 }
@@ -172,19 +184,65 @@ pman.controller('home', ['$scope', 'Parcels', function($scope, Parcels) {
 
     $scope.parcel = new Parcels({
         student_name: '',
-        parcel_type: 1,
+        parcel_type: $scope.parcel_type[0],
+        parcel_id: '',
         parcel: ''
     })
+    var udata = (sessionStorage.user) ? JSON.parse(sessionStorage.user) : undefined;
+    $scope.parcels = Parcels.query(udata);
 
     $scope.addParcel = function(form) {
         if (form.$invalid) {
             $scope.$broadcast('field:invalid')
         } else {
-            var a = JSON.parse(sessionStorage.user)
-            $scope.parcel.$create(a);
+            $scope.parcel.parcel_type = $scope.parcel.parcel_type.id;
+            $scope.parcel.$create(udata, function(res) {
+                $scope.parcels = Parcels.query(udata);
+                form.$setPristine();
+                $scope.parcel = new Parcels({
+                    student_name: '',
+                    parcel_type: $scope.parcel_type[0],
+                    parcel_id: '',
+                    parcel: ''
+                })
+                $scope.$emit('parcel:added');
+            }, error_handler);
         }
     }
 
+    $scope.claim = function(parcel_id) {
+        var modalInstance = $modal.open({
+            animation: true,
+            size: 'sm',
+            templateUrl: 'static/templates/claim.html',
+            controller: 'claim',
+            resolve: {
+                parcel_data: function() {
+                    return parcel_id;
+                }
+            }
+        });
+    }
+
+}])
+
+pman.controller('claim', ['$scope', '$modalInstance', 'parcel_data', 'Parcels', 'Notification', function($scope, $modalInstance, parcel_data, Parcels, Notification) {
+    var udata = (sessionStorage.user) ? JSON.parse(sessionStorage.user) : undefined;
+    console.log(parcel_data);
+    $scope.ok = function() {
+        $scope.claim = new Parcels({
+            id: parcel_data,
+            student_id: $scope.student_id
+        });
+
+        $scope.claim.$update(udata, function(res) {
+            $modalInstance.dismiss('cancel');
+            Notification.success({ message: 'Parcel Claimed!' })
+        }, error_handler);
+    }
+    $scope.cancel = function () {
+        $modalInstance.dismiss('cancel');
+    };
 }])
 
 pman.controller('user', ['$scope', '$location', 'Users', function($scope, $location, Users) {

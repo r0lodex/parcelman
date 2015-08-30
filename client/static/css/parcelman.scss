@@ -1,6 +1,9 @@
 @import "../../lib/bootstrap/scss/bootstrap";
+@import "notification";
+@import "icons";
 
 // Helpers
+// =====================================
 .card-shadow {
     background: #FFF;
     border-radius: 5px;
@@ -13,7 +16,21 @@
     box-shadow: 0 0 5px rgba(#000, 0.1);
 }
 
-//
+@mixin multiline-ellipsis($font-size, $line-height, $lines-to-show) {
+    display: block;
+    display: -webkit-box;
+    width: 100%;
+    height: $font-size*$line-height*$lines-to-show;
+    margin: 0 auto;
+    font-size: $font-size;
+    line-height: $line-height;
+    -webkit-line-clamp: $lines-to-show;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+// =====================================
 body {
     padding-top: 10px;
     background: lighten(#EAEAEA, 5%);
@@ -35,4 +52,12 @@ body {
         height: 30px;
         float: left;
     }
+}
+
+.table-inverse {
+    background-color: lighten(#373a3c, 5%);
+}
+
+.student_name {
+    @include multiline-ellipsis(1rem, 1.2, 1);
 }
