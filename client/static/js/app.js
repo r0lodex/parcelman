@@ -45,7 +45,7 @@ pman.config(['$routeProvider', '$locationProvider', function($routeProvider, $lo
             controller: 'parcel',
             templateUrl: 'static/templates/parcel.html'
         })
-        .when('/users', {
+        .when('/users/:id?', {
             controller: 'user',
             templateUrl: 'static/templates/user.html'
         })
@@ -81,6 +81,19 @@ pman.factory('Parcels', ['$resource', function($resource) {
     })
 }]);
 
+// SERVICES
+// ========================
+pman.factory('AuthService', function(){
+    return service = {
+        login: function(id, token) {
+            var authdata = { id: id, token: token }
+            sessionStorage.user = JSON.stringify(authdata);
+        },
+        logout: function() {
+            sessionStorage.clear();
+        }
+    }
+});
 
 // DIRECTIVES
 // ========================
@@ -109,29 +122,52 @@ pman.directive('formField', function(){
 // ========================
 
 // Helper functions
-var success_handler = function(response) {
-    console.log(response);
-}
 var error_handler = function(response) {
     console.log(response.data.msg);
 }
 
 
-pman.controller('root', ['$scope', 'Auth', function($scope, Auth) {
-    $scope.login = function(form) {
-        if (form.$invalid) {
-            $scope.$broadcast('field:invalid')
-        } else {
-            console.log(form.username, form.password)
+pman.controller('root', ['$scope', 'Auth', 'AuthService', function($scope, Auth, AuthService) {
+    $scope.loggedIn = (sessionStorage.user) ? true:false;
+    if (!$scope.loggedIn) {
+        $scope.auth = new Auth({
+            username: '',
+            password: ''
+        })
+        $scope.login = function(form) {
+            if (form.$invalid) {
+                $scope.$broadcast('field:invalid')
+            } else {
+                $scope.loggedIn = true;
+                AuthService.login('id', 'token')
+
+                // $scope.auth.$login(function(res) {
+                //     $scope.loggedIn = true;
+                //     AuthService.login(res.id, res.token)
+                // })
+            }
+        }
+
+        $scope.credentials = {
+            uid: sessionStorage.uid,
+            token: sessionStorage.token
         }
     }
 
-    $scope.credentials = {
-        uid: sessionStorage.uid,
-        token: sessionStorage.token
+    $scope.logout = function() {
+        AuthService.logout();
+        window.location.reload();
     }
 
 }])
-pman.controller('home', ['$scope', 'Users', function($scope, Users) {}])
-pman.controller('parcel', ['$scope', 'Parcels', function($scope) {}])
-pman.controller('user', ['$scope', 'User', function($scope) {}])
+pman.controller('home', ['$scope', function($scope) {}])
+pman.controller('parcel', ['$scope', '$location', 'Parcels', function($scope, $location, Parcels) {
+    if (!sessionStorage.user) {
+        $location.path('/')
+    }
+}])
+pman.controller('user', ['$scope', '$location', 'Users', function($scope, $location, Users) {
+    if (!sessionStorage.user) {
+        $location.path('/')
+    }
+}])
