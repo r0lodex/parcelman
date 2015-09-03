@@ -1,0 +1,42 @@
+<section class="row filter">
+    <div class="col-md-10">
+        <input class="form-control" ng-model="search" placeholder="Search by student's name or Tracking ID">
+    </div>
+    <div class="col-md-2">
+        <select class="c-select">
+            <option value="1">All</option>
+            <option value="2">Claimed</option>
+            <option value="3">Unclaimed</option>
+        </select>
+    </div>
+</section>
+<hr>
+<section class="row" ng-if="parcels.length">
+    <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6" ng-repeat="p in parcels | filter: search">
+        <div class="card card-block parcel-card">
+            <div class="card-action">
+                <ul class="list-inline">
+                    <li><a ng-click="viewParcel(p.id)"><span class="pmicon pm-menu"></span></a></li>
+                </ul>
+            </div>
+            <h3 class="card-title" ng-bind="p.student_name"></h3>
+            <small class="text-muted">Received <span am-time-ago="p.date_in"></span></small>
+            <p class="card-text">
+                <span ng-switch="p.parcel_type">
+                    <span ng-switch-when="1"><span class="pmicon pm-box"></span> Package</span>
+                    <span ng-switch-when="2"><span class="pmicon pm-mail"></span> Letter</span>
+                    <span ng-switch-default><span class="pmicon pm-record"></span> Unknown Parcel</span>
+                </span>
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- If there are no parcels, this section will be displayed -->
+<section class="jumbotron no-items text-center" ng-if="!parcels.length">
+    <h1 class="text-muted">
+        <span class="pmicon pm-cross"></span><br>
+    </h1>
+    <p class="text-muted">There are no unclaimed parcels.</p>
+    <button class="btn btn-warning-outline btn-sm">View Claimed Parcels</button>
+</section>
