@@ -24,8 +24,11 @@
   ],
   "dependencies": {
     "angular": "~1.4.5",
+    "angular-bootstrap": "~0.13.3",
+    "angular-moment": "~0.10.2",
     "angular-resource": "~1.4.5",
     "angular-route": "~1.4.5",
+    "angular-ui-notification": "~0.0.14",
     "bootstrap": "4"
   }
 }
