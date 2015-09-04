@@ -1,27 +1,13 @@
 <div class="modal-body">
-    <form class="addparcelform" ng-submit="addParcel(addparcelform)" novalidate>
+    <form name="addparcelform" ng-submit="addParcel(addparcelform)" novalidate>
         <h3>Add A Parcel</h3>
         <p class="text-muted">Use the form below to register a parcel. An SMS notification will be sent to recipients with phone number.</p>
-        <fieldset class="form-group">
-            <div class="input-group">
-                <div class="input-group-addon"><span class="pmicon pm-head"></span></div>
-                <input class="form-control" placeholder="Recipient's Name">
-            </div>
-        </fieldset>
-        <fieldset class="form-group">
-            <div class="input-group">
-                <div class="input-group-addon"><span class="pmicon pm-speech-bubble"></span></div>
-                <input class="form-control" placeholder="Recipient's Phone No.">
-            </div>
-        </fieldset>
-        <fieldset class="form-group">
-            <div class="input-group">
-                <div class="input-group-addon">
-                    <span class="pmicon pm-location-2"></span>
-                </div>
-                <input class="form-control" placeholder="Tracking ID">
-            </div>
-        </fieldset>
+        <formgroup object="parceldetails" field="recipient_name" placeholder="Recipient's Name" icon="pm-head" type="text" inputgroup="true" required="true"></formgroup>
+        <formgroup object="parceldetails" field="recipient_phone" placeholder="Recipient's Phone No." icon="pm-speech-bubble" type="text" inputgroup="true" required="false"></formgroup>
+        <formgroup object="parceldetails" field="tracking_id" placeholder="Tracking ID" icon="pm-location-2" type="text" inputgroup="true" required="false"></formgroup>
+        <formgroup object="parceldetails" field="parcel_type" array="parcel_types" type="dropdown" required="false"></formgroup>
+        <formgroup object="parceldetails" field="notes" placeholder="Notes" type="textarea" required="false"></formgroup>
+        <!--
         <fieldset class="form-group">
             <select class="c-select">
                 <option value="1">Package</option>
@@ -31,7 +17,7 @@
         </fieldset>
         <fieldset class="form-group">
             <textarea class="form-control" placeholder="Notes"></textarea>
-        </fieldset>
+        </fieldset> -->
         <hr>
         <button type="submit" class="btn btn-success-outline">Add Parcel</button>
         <button type="submit" class="btn btn-secondary" ng-click="cancel()">Cancel</button>

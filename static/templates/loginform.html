@@ -1,9 +1,9 @@
-<form name="loginform" ng-submit="login()">
-    <fieldset class="form-group">
-        <input class="form-control" type="text" name="username" ng-model="login.username">
-    </fieldset>
-    <fieldset class="form-group">
-        <input class="form-control" type="password" name="password" ng-model="login.password">
-    </fieldset>
-    <button class="btn btn-primary btn-block" type="submit">Login</button>
-</form>
+<div class="modal-body">
+    <form name="loginform" ng-submit="login(loginform)" novalidate>
+        <h3 class="text-center">Login</h3>
+        <hr>
+        <formgroup object="loginitem" field="username" placeholder="Username" icon="pm-head" type="text" inputgroup="true" required="true" ></formgroup>
+        <formgroup object="loginitem" field="password" placeholder="Password" icon="pm-lock" type="password" inputgroup="true" required="true" ></formgroup>
+        <button type="submit" class="btn btn-primary btn-block">Login</button>
+    </form>
+</div>
