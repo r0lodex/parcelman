@@ -12,15 +12,15 @@
 </section>
 <hr>
 <section class="row" ng-if="parcels.length">
-    <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6" ng-repeat="p in parcels | filter: search">
+    <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6" ng-repeat="p in parcels | filter: search | orderBy: '-date_in'">
         <div class="card card-block parcel-card">
             <div class="card-action">
                 <ul class="list-inline">
                     <li><a ng-click="viewParcel(p.id)"><span class="pmicon pm-menu"></span></a></li>
                 </ul>
             </div>
-            <h3 class="card-title" ng-bind="p.student_name"></h3>
-            <small class="text-muted">Received <span am-time-ago="p.date_in"></span></small>
+            <h3 class="card-title" ng-bind="p.recipient_name"></h3>
+            <small class="text-muted">Received <span am-time-ago="p.date_in" am-full-date-threshold="4" am-full-date-format="D MMM YYYY"></span></small>
             <p class="card-text">
                 <span ng-switch="p.parcel_type">
                     <span ng-switch-when="1"><span class="pmicon pm-box"></span> Package</span>
@@ -37,6 +37,5 @@
     <h1 class="text-muted">
         <span class="pmicon pm-cross"></span><br>
     </h1>
-    <p class="text-muted">There are no unclaimed parcels.</p>
-    <button class="btn btn-warning-outline btn-sm">View Claimed Parcels</button>
+    <p class="text-muted">There are no parcels.</p>
 </section>

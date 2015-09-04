@@ -3,11 +3,14 @@
         <span>Parcelman</span>
     </a>
     <ul class="nav navbar-nav pull-right">
-        <li class="nav-item">
+        <li class="nav-item" ng-if="loggedIn">
             <a class="nav-link" href="#/" ng-click="showAddParcelForm()"><span class="pmicon pm-marquee-plus"></span> Add Parcel</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#/" ng-click="logout()"><span class="pmicon pm-power"></span> Logout</a>
+            <span ng-switch="loggedIn">
+                <a ng-switch-when="true" class="nav-link" href="#/" ng-click="logout()"><span class="pmicon pm-power"></span> Logout</a>
+                <a ng-switch-default class="nav-link" href="#/" ng-click="showLoginForm()"><span class="pmicon pm-lock"></span> Login</a>
+            </span>
         </li>
     </ul>
 </nav>
