@@ -56,6 +56,9 @@ var parcelMan = angular.module('parcelMan', [
 // setiap HTTP Request itu dibuat dan cara untuk
 // mengesahkan id pengguna.
 
+    // Time processing settings (Using UNIX Timestamp)
+    parcelMan.constant('angularMomentConfig', { preprocess: 'unix' });
+
     parcelMan.config(function($httpProvider, NotificationProvider) {
         // Pushing AuthData to every HTTP Request
         $httpProvider.interceptors.push('authinjector');
@@ -69,8 +72,8 @@ var parcelMan = angular.module('parcelMan', [
             // startRight: 10,
             // verticalSpacing: 20,
             // horizontalSpacing: 20,
-            // positionX: 'left',
-            // positionY: 'bottom',
+            positionX: 'left',
+            positionY: 'bottom',
         })
     });
 
@@ -93,3 +96,10 @@ var parcelMan = angular.module('parcelMan', [
         }
         return authinjector;
     });
+
+    // Error Handler Service
+    parcelMan.service('ERRORS', function(Notification) {
+        return function(response) {
+            Notification.error({ message: response.data.msg })
+        };
+    })
