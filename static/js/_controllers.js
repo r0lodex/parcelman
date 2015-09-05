@@ -1,52 +1,117 @@
 // Available Factories:
 // 1 - Auth (login)
-// 2 - Parcel (list, add, update, claim)
+// 2 - Parcel (list, show, add, update, claim)
 parcelMan.run(function($rootScope, Parcel, Notification) {
     $rootScope.parcels = Parcel.list();
-    $rootScope.$on('parcel:added', function() {
-        Notification.success('Parcel has been added');
+    $rootScope.status = '1'; // Current status filter
+    $rootScope.$on('parcel:added', function(evt, args) {
+        var message = 'Parcel has been added';
+        if (args.id) {
+            message = 'Parcel for '+ args.recipient_name + ' has been updated.'
+        }
+        Notification.success(message);
+
+        // Reload parcel listing
         $rootScope.parcels = Parcel.list();
     })
 });
 
-parcelMan.controller('mainController', function($scope, Parcel, Notification) {});
+parcelMan.controller('mainController', function($scope, $modal) {
+    // View Parcel Details
+    $scope.viewParcelDetails = function(parcel_id) {
+        $modal.open({
+            templateUrl: 'static/templates/parcel_editor.html',
+            size: 'md',
+            controller: 'parcelController',
+            resolve: {
+                objectid: function() {
+                    return parcel_id;
+                }
+            }
+        })
+    };
+});
 
-parcelMan.controller('parcelController', function($scope, $modalInstance, Parcel, ERRORS) {
+parcelMan.service('objectid', function() { return null }) // Hack for empty injection. Lame!!
+parcelMan.controller('parcelController', function($scope, $injector, $modalInstance, objectid, Parcel, ERRORS) {
+
+    // Define jenis parcel yang ada
     $scope.parcel_types = [
         { name: 'Package', id: 1 },
         { name: 'Letter', id: 2 },
         { name: 'Others', id: 3 },
     ];
 
+    // Default field values
     $scope.parceldetails = new Parcel({
         recipient_name: '',
         recipient_phone: '',
-        tracking_id: '',
+        tracking_no: '',
         parcel_type: $scope.parcel_types[0]
     });
 
+    // Sekiranya ID terdapat dalam injection,
+    // cari parcel berdasarkan ID
+    if (typeof objectid === 'string') { // This method is a hack. Lame
+        Parcel.show({ arg_a: objectid }, function(response) {
+            $scope.editable = (!response.date_out) ? true: false;
+            Object.keys(response).forEach(function(k) {
+                if (k != 'parcel_type') {
+                    $scope.parceldetails[k] = response[k]
+                }
+            });
+            // Select Package Type properly
+            $scope.parcel_types.forEach(function(k,v) {
+                if (response.parcel_type == k.id) {
+                    $scope.parceldetails.parcel_type = $scope.parcel_types[v]
+                }
+            })
+        }, ERRORS)
+    }
+
     // Add Parcel Processing
-    $scope.addParcel = function(form) {
+    $scope.parcelcrud = function(form) {
         if (form.$invalid) {
             $scope.$broadcast('field:invalid');
         } else {
-            // Set the type not to be an array
+            // Set the type not to be an array because the backend doesn't support this
             $scope.parceldetails.parcel_type = $scope.parceldetails.parcel_type.id;
-            $scope.parceldetails.$add(function(response){
-                $modalInstance.dismiss('cancel'); // Closes modal
-                $scope.$emit('parcel:added', response); // Notify parent of this event.
-            }, ERRORS);
+            if ($scope.parceldetails.id) {
+                // Update Existing Parcel
+                Parcel.update({arg_a: $scope.parceldetails.id}, $scope.parceldetails, function(response) {
+                    $scope.$emit('parcel:added', $scope.parceldetails);
+                }, ERRORS);
+            } else {
+                // Create New Parcel
+                $scope.parceldetails.$add(function(response){
+                    $modalInstance.dismiss('cancel'); // Closes modal
+                    $scope.$emit('parcel:added', $scope.parceldetails); // Notify parent of this event.
+                }, ERRORS);
+            }
+        }
+    };
+
+    $scope.claimParcel = function(parcel_id) {
+        var a = prompt('Please insert the Student\'s ID');
+        if (a) {
+            var b = a.trim() // Trim whitespaces
+            if (b.length) {
+                $scope.parceldetails.recipient_id = b;
+                Parcel.claim({ arg_a:parcel_id }, $scope.parceldetails.recipient_id, function(response) {
+                    $modalInstance.dismiss('cancel');
+                    $scope.$emit('parcel:added', $scope.parceldetails);
+                }, ERRORS)
+            } else {
+                alert('Student ID is required to claim parcels.');
+            }
+        } else {
+            alert('Student ID is required to claim parcels.');
         }
     };
 
     // Close Add Parcel modal popup
     $scope.cancel = function() {
         $modalInstance.dismiss('cancel');
-    };
-
-    // View Parcel Details
-    $scope.viewParcel = function(parcel_id) {
-        console.log(parcel_id);
     };
 });
 
@@ -58,7 +123,6 @@ parcelMan.controller('loginController', function($rootScope, $scope, Auth, ERROR
         } else {
             Auth.login($scope.loginitem, function(response) {
                 // Set the session storage.
-                sessionStorage.authenticated = true;
                 sessionStorage.uid = response.id;
                 sessionStorage.token = response.token;
 

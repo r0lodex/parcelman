@@ -11,7 +11,7 @@ parcelMan.directive('navigation', function($modal) {
         link: function(scope, elem, attr) {
             scope.showAddParcelForm = function() {
                 $modal.open({
-                    templateUrl: 'static/templates/addparcel.html',
+                    templateUrl: 'static/templates/parcel_editor.html',
                     size: 'md',
                     controller: 'parcelController'
                 })
@@ -27,7 +27,7 @@ parcelMan.directive('navigation', function($modal) {
                 scope.loggedIn = false;
                 sessionStorage.clear();
             };
-            scope.loggedIn = (sessionStorage.authenticated == 'true') ? true:false;
+            scope.loggedIn = (sessionStorage.token) ? true:false;
             scope.$on('loggedIn', function() { scope.loggedIn = true; });
         }
     }

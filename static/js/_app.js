@@ -42,6 +42,7 @@ var parcelMan = angular.module('parcelMan', [
     parcelMan.factory('Parcel', function($resource) {
         return $resource('server/api/parcel/:arg_a/:arg_b', { arg_a: '@arg_a', arg_b: '@arg_b' }, {
             list: { method: 'GET', isArray: true },
+            show: { method: 'GET', isArray: false },
             add: { method: 'POST', isArray: false },
             update: { method: 'PUT', isArray: false },
             claim: { method: 'DELETE', isArray: false }
@@ -63,15 +64,9 @@ var parcelMan = angular.module('parcelMan', [
         // Pushing AuthData to every HTTP Request
         $httpProvider.interceptors.push('authinjector');
 
-        // Notification Settings — Ubah mengikut
-        // citarasa anda. Uncomment yang mana suka.
+        // Notification Settings
         // Ref: https://github.com/alexcrack/angular-ui-notification
         NotificationProvider.setOptions({
-            // delay: 10000,
-            // startTop: 20,
-            // startRight: 10,
-            // verticalSpacing: 20,
-            // horizontalSpacing: 20,
             positionX: 'left',
             positionY: 'bottom',
         })
@@ -83,8 +78,8 @@ var parcelMan = angular.module('parcelMan', [
     parcelMan.factory('authinjector', function($q) {
         var authinjector = {
             request: function(config) {
-                config.headers['x-parcelman-uid'] = (sessionStorage.authenticated) ? sessionStorage.uid : 'anon';
-                config.headers['x-parcelman-token'] = (sessionStorage.authenticated) ? sessionStorage.token : 'no-token';
+                config.headers['x-parcelman-uid'] = (sessionStorage.token) ? sessionStorage.uid : 'anon';
+                config.headers['x-parcelman-token'] = (sessionStorage.token) ? sessionStorage.token : 'no-token';
                 return config || $q.when(config);
             },
             response: function(response) {
@@ -100,6 +95,8 @@ var parcelMan = angular.module('parcelMan', [
     // Error Handler Service
     parcelMan.service('ERRORS', function(Notification) {
         return function(response) {
-            Notification.error({ message: response.data.msg })
+            if (response.status != 404) {
+                Notification.error({ message: response.data.msg })
+            }
         };
     })
