@@ -104,7 +104,7 @@ parcelMan.controller('parcelController', function($scope, $injector, $modalInsta
             var b = a.trim() // Trim whitespaces
             if (b.length) {
                 $scope.parceldetails.recipient_id = b;
-                Parcel.claim({ arg_a:parcel_id }, $scope.parceldetails.recipient_id, function(response) {
+                Parcel.claim({ arg_a:parcel_id, recipient_id: $scope.parceldetails.recipient_id }, function(response) {
                     $modalInstance.dismiss('cancel');
                     $scope.$emit('parcel:added', $scope.parceldetails);
                 }, ERRORS)
