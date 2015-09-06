@@ -1,0 +1,19 @@
+/* Modifikasi kepada keseluruhan theme */
+body {
+    background: #EEEEEE;
+}
+
+/* Untuk tukar perkara berkenaan card */
+.parcel-card {
+    background: #FFF;
+    color: #000;
+}
+
+/* Navigation Bar */
+.navbar {
+    background: auto;
+}
+.navbar .navbar-brand {
+    color: #FFF;
+}
+
