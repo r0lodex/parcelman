@@ -3,7 +3,7 @@
 // 2 - Parcel (list, show, add, update, claim)
 parcelMan.run(function($rootScope, Parcel, Notification) {
     $rootScope.parcels = Parcel.list();
-    $rootScope.status = ''; // Current status filter
+    $rootScope.status = '1'; // Current status filter
     $rootScope.$on('parcel:added', function(evt, args) {
         var message = 'Parcel has been added';
         if (args.id) {
@@ -127,7 +127,7 @@ parcelMan.controller('parcelController', function($scope, $injector, $modalInsta
     };
 });
 
-parcelMan.controller('loginController', function($rootScope, $scope, Auth, ERRORS, $modalInstance) {
+parcelMan.controller('loginController', function($rootScope, $scope, Auth, ERRORS, $modalInstance, Notification) {
     $scope.loginitem = { username: '', password: '' };
     $scope.login = function(form) {
         if (form.$invalid) {
@@ -142,6 +142,7 @@ parcelMan.controller('loginController', function($rootScope, $scope, Auth, ERROR
                 // Events to execute upon successful login
                 $modalInstance.dismiss('cancel');
                 $rootScope.$broadcast('loggedIn', response);
+                Notification.success('You are now logged in.')
             }, ERRORS)
         }
     };

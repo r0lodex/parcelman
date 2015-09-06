@@ -2,7 +2,7 @@
 // yang membolehkan kita membina komponen-komponen
 // supaya dapat digunakan semula (reusable)
 
-parcelMan.directive('navigation', function($modal) {
+parcelMan.directive('navigation', function($modal, Notification) {
     return {
         restrict: 'E',
         replace: true,
@@ -25,6 +25,7 @@ parcelMan.directive('navigation', function($modal) {
             };
             scope.logout = function() {
                 scope.loggedIn = false;
+                Notification.warning('You are now logged out.')
                 sessionStorage.clear();
             };
             scope.loggedIn = (sessionStorage.token) ? true:false;
