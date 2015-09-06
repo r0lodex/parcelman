@@ -28,7 +28,11 @@ parcelMan.directive('navigation', function($modal) {
                 sessionStorage.clear();
             };
             scope.loggedIn = (sessionStorage.token) ? true:false;
-            scope.$on('loggedIn', function() { scope.loggedIn = true; });
+            scope.username = (sessionStorage.username) ? sessionStorage.username: '';
+            scope.$on('loggedIn', function() {
+                scope.loggedIn = true;
+            });
+            scope.$on('loggedOut', function() { scope.loggedIn = false; });
         }
     }
 });

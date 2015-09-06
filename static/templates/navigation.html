@@ -1,6 +1,6 @@
 <nav class="navbar navbar-dark bg-primary">
     <a class="navbar-brand" href="#/">
-        <span>Parcelman</span>
+        <span>Parcelman</span> <small ng-if="loggedIn" class="text-capitalize" ng-bind="username"></small>
     </a>
     <ul class="nav navbar-nav pull-right">
         <li class="nav-item" ng-if="loggedIn">

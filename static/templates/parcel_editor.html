@@ -1,13 +1,17 @@
 <div class="modal-body">
     <form name="parcelform" ng-submit="parcelcrud(parcelform)" novalidate>
-        <span ng-switch="editable">
+        <span ng-switch="exist">
             <span ng-switch-when="false">
                 <h3>Add A Parcel</h3>
                 <p class="text-muted">Use the form below to register a parcel. An SMS notification will be sent to recipients with phone number.</p>
             </span>
             <span ng-switch-when="true">
                 <h3 class="no-margin">Parcel for <span class="text-capitalize" ng-bind="parceldetails.recipient_name || '(Enter a name)'"></span></h3>
-                <small class="text-muted">Received <span am-time-ago="parceldetails.date_in" am-full-date-threshold="4" am-full-date-format="D MMM YYYY"></span></small>
+                <small ng-if="!parceldetails.date_out" class="text-muted">Received <span am-time-ago="parceldetails.date_in" am-full-date-threshold="4" am-full-date-format="D MMM YYYY"></span></small>
+                <small ng-if="parceldetails.date_out" class="text-success">
+                    Claimed <span am-time-ago="parceldetails.date_in" am-full-date-threshold="4" am-full-date-format="D MMM YYYY"></span> 
+                    by <span ng-bind="parceldetails.recipient_id || 'Anonymous'"></span>
+                </small>
                 <hr>
             </span>
         </span>
@@ -18,10 +22,14 @@
         <formgroup object="parceldetails" field="notes" placeholder="Notes" icon="pm-paper-clip" type="textarea" required="false"></formgroup>
         <hr>
         <span ng-switch="editable">
-            <button ng-switch-when="false" type="submit" class="btn btn-success-outline">Add Parcel</button>
             <span ng-switch-when="true">
-                <button type="submit" class="btn btn-primary-outline">Update</button>
-                <a ng-click="claimParcel(parceldetails.id)" class="pull-right btn btn-success">Claim</a>
+                <span ng-if="authorized">
+                    <button ng-if="!exist" type="submit" class="btn btn-success-outline">Add Parcel</button>
+                    <button ng-if="exist" type="submit" class="btn btn-primary-outline">Update</button>
+                    <a ng-if="parceldetails.status == '1'" ng-click="claimParcel(parceldetails.id)" class="pull-right btn btn-success">Claim</a>
+                </span>
+            </span>
+            <span ng-switch-when="false">
             </span>
         </span>
         <a class="btn btn-secondary" ng-click="cancel()">Close</a>

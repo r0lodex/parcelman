@@ -3,7 +3,7 @@
 // 2 - Parcel (list, show, add, update, claim)
 parcelMan.run(function($rootScope, Parcel, Notification) {
     $rootScope.parcels = Parcel.list();
-    $rootScope.status = '1'; // Current status filter
+    $rootScope.status = ''; // Current status filter
     $rootScope.$on('parcel:added', function(evt, args) {
         var message = 'Parcel has been added';
         if (args.id) {
@@ -50,10 +50,15 @@ parcelMan.controller('parcelController', function($scope, $injector, $modalInsta
         parcel_type: $scope.parcel_types[0]
     });
 
+    $scope.exist = false;
+    $scope.editable = true;
+    $scope.authorized = (sessionStorage.token) ? true:false;
+
     // Sekiranya ID terdapat dalam injection,
     // cari parcel berdasarkan ID
     if (typeof objectid === 'string') { // This method is a hack. Lame
         Parcel.show({ arg_a: objectid }, function(response) {
+            $scope.exist = true;
             $scope.editable = (!response.date_out) ? true: false;
             Object.keys(response).forEach(function(k) {
                 if (k != 'parcel_type') {
@@ -68,6 +73,8 @@ parcelMan.controller('parcelController', function($scope, $injector, $modalInsta
             })
         }, ERRORS)
     }
+
+    console.log($scope.exist)
 
     // Add Parcel Processing
     $scope.parcelcrud = function(form) {
@@ -92,7 +99,7 @@ parcelMan.controller('parcelController', function($scope, $injector, $modalInsta
     };
 
     $scope.claimParcel = function(parcel_id) {
-        var a = prompt('Please insert the Student\'s ID');
+        var a = prompt('Please insert the recipient\'s signature');
         if (a) {
             var b = a.trim() // Trim whitespaces
             if (b.length) {
@@ -102,10 +109,10 @@ parcelMan.controller('parcelController', function($scope, $injector, $modalInsta
                     $scope.$emit('parcel:added', $scope.parceldetails);
                 }, ERRORS)
             } else {
-                alert('Student ID is required to claim parcels.');
+                alert('A signature is required to claim parcels.');
             }
         } else {
-            alert('Student ID is required to claim parcels.');
+            alert('A signature is required to claim parcels.');
         }
     };
 
@@ -125,6 +132,7 @@ parcelMan.controller('loginController', function($rootScope, $scope, Auth, ERROR
                 // Set the session storage.
                 sessionStorage.uid = response.id;
                 sessionStorage.token = response.token;
+                sessionStorage.username = $scope.loginitem.username;
 
                 // Events to execute upon successful login
                 $modalInstance.dismiss('cancel');
