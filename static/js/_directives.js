@@ -41,7 +41,7 @@ parcelMan.directive('formgroup', function() {
     return {
         restrict: 'E',
         replace: true,
-        templateUrl: 'static/templates/components/form_field.html',
+        templateUrl: 'static/templates/comp/form_field.html',
         scope: {
             object: '=',
             array: '=',
