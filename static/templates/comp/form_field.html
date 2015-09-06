@@ -1,0 +1,25 @@
+<fieldset class="form-group" ng-form="{{ field }}" ng-class="{ 'has-error': {{ field }}.$dirty && {{ field }}.$invalid }">
+    <!-- NORMAL INPUT -->
+    <div class="input-group" ng-if="inputgroup == 'true'">
+        <div class="input-group-addon"><span class="pmicon {{ icon }}"></span></div>
+        <span ng-switch="required">
+            <input ng-switch-when="true" class="form-control" ng-model="object[field]" placeholder="{{ placeholder }}" required="true" type="{{ type }}">
+            <input ng-switch-when="false" class="form-control" ng-model="object[field]" placeholder="{{ placeholder }}" type="{{ type }}">
+        </span>
+    </div>
+
+    <!-- DROPDOWN -->
+    <span ng-if="type == 'dropdown'">
+        <label><span class="pmicon {{ icon }}"></span> <span ng-bind="placeholder"></span></label>
+        <select class="c-select" ng-model="object[field]" ng-options="item as item.name for item in array"></select>
+    </span>
+
+    <!-- TEXTAREA -->
+    <span ng-if="type == 'textarea'">
+        <label><span class="pmicon {{ icon }}"></span> <span ng-bind="placeholder"></span></label>
+        <span ng-switch="required">
+            <textarea ng-switch-when="true" class="form-control" ng-model="object[field]" required="true" placeholder="{{ placeholder }}"></textarea>
+            <textarea ng-switch-when="false" class="form-control" ng-model="object[field]" placeholder="{{ placeholder }}"></textarea>
+        </span>
+    </span>
+</fieldset>
