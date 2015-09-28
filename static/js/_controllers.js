@@ -3,7 +3,7 @@
 // 2 - Parcel (list, show, add, update, claim)
 parcelMan.run(function($rootScope, Parcel, Notification) {
     $rootScope.parcels = Parcel.list();
-    $rootScope.status = '1'; // Current status filter
+    $rootScope.status = ''; // Current status filter
     $rootScope.$on('parcel:added', function(evt, args) {
         var message = 'Parcel has been added';
         if (args.id) {
@@ -16,20 +16,61 @@ parcelMan.run(function($rootScope, Parcel, Notification) {
     })
 });
 
-parcelMan.controller('mainController', function($scope, $modal) {
-    // View Parcel Details
-    $scope.viewParcelDetails = function(parcel_id) {
-        $modal.open({
-            templateUrl: 'static/templates/parcel_editor.html',
-            size: 'md',
-            controller: 'parcelController',
-            resolve: {
-                objectid: function() {
-                    return parcel_id;
+parcelMan.controller('mainController', function($scope, $modal, $location, Parcel, ERRORS) {
+    if (!sessionStorage.uid) {
+        $location.path('/public')
+    } else {
+        $scope.loggedIn = true;
+         // View Parcel Details
+        $scope.viewParcelDetails = function(parcel_id) {
+            $modal.open({
+                templateUrl: 'static/templates/parcel_editor.html',
+                size: 'md',
+                controller: 'parcelController',
+                resolve: {
+                    objectid: function() {
+                        return parcel_id;
+                    }
                 }
+            })
+        };
+        // Define jenis parcel yang ada
+        $scope.parcel_types = [
+            { name: 'Package', id: 1 },
+            { name: 'Letter', id: 2 },
+            { name: 'Others', id: 3 },
+        ];
+
+        // Default field values
+        $scope.parceldetails = new Parcel({
+            recipient_name: '',
+            recipient_phone: '',
+            tracking_no: '',
+            parcel_type: $scope.parcel_types[0]
+        });
+
+        // Add Parcel Processing
+        $scope.parcelcrud = function(form) {
+            if (form.$invalid) {
+                $scope.$broadcast('field:invalid');
+            } else {
+                // Set the type not to be an array because the backend doesn't support this
+                $scope.parceldetails.parcel_type = $scope.parceldetails.parcel_type.id;
+                // Create New Parcel
+                Parcel.add($scope.parceldetails, function(response){
+                    $scope.$emit('parcel:added', $scope.parceldetails); // Notify parent of this event.
+                    // Default field values
+                    $scope.parceldetails = new Parcel({
+                        recipient_name: '',
+                        recipient_phone: '',
+                        tracking_no: '',
+                        parcel_type: $scope.parcel_types[0]
+                    });
+                    form.$setPristine()
+                }, ERRORS);
             }
-        })
-    };
+        };
+    }
 });
 
 parcelMan.service('objectid', function() { return null }) // Hack for empty injection. Lame!!
@@ -99,7 +140,7 @@ parcelMan.controller('parcelController', function($scope, $injector, $modalInsta
     };
 
     $scope.claimParcel = function(parcel_id) {
-        var a = prompt('Please insert the recipient\'s signature');
+        var a = prompt('Please insert student\'s ID');
         if (a) {
             var b = a.trim() // Trim whitespaces
             if (b.length) {
@@ -114,12 +155,19 @@ parcelMan.controller('parcelController', function($scope, $injector, $modalInsta
                     $scope.$emit('parcel:added', $scope.parceldetails);
                 }, ERRORS)
             } else {
-                alert('A signature is required to claim parcels.');
+                alert('Student ID is required to claim parcels.');
             }
         } else {
-            alert('A signature is required to claim parcels.');
+            alert('Student ID is required to claim parcels.');
         }
     };
+
+    $scope.deleteParcel = function(parcel_id) {
+        var a = confirm('Are you sure you want to delete this parcel?')
+        if (a) {
+            console.log('Delete parcel is not ready')
+        }
+    }
 
     // Close Add Parcel modal popup
     $scope.cancel = function() {
@@ -127,8 +175,24 @@ parcelMan.controller('parcelController', function($scope, $injector, $modalInsta
     };
 });
 
-parcelMan.controller('loginController', function($rootScope, $scope, Auth, ERRORS, $modalInstance, Notification) {
+parcelMan.controller('publicController', function($scope, $location) {
+    if (sessionStorage.uid) {
+        $location.path('/')
+    }
+})
+
+parcelMan.controller('reportController', function($scope, $location) {
+    if (!sessionStorage.uid) {
+        $location.path('/public')
+    } else {
+
+    }
+})
+
+parcelMan.controller('loginController', function($location, $rootScope, $scope, Auth, ERRORS, $modalInstance, Notification) {
     $scope.loginitem = { username: '', password: '' };
+    $scope.forgotitem = { icno: '' };
+
     $scope.login = function(form) {
         if (form.$invalid) {
             $scope.$broadcast('field:invalid');
@@ -142,8 +206,18 @@ parcelMan.controller('loginController', function($rootScope, $scope, Auth, ERROR
                 // Events to execute upon successful login
                 $modalInstance.dismiss('cancel');
                 $rootScope.$broadcast('loggedIn', response);
-                Notification.success('You are now logged in.')
+                Notification.success('You are now logged in.');
+                $location.path('/')
             }, ERRORS)
         }
     };
+
+    $scope.forgot = function(form) {
+        if (form.$invalid) {
+            $scope.$broadcast('field:invalid');
+        } else {
+            // API Endpoint to reset password using validated IC No.
+            console.log($scope.forgotitem.icno);
+        }
+    }
 })

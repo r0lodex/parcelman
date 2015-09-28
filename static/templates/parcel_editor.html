@@ -1,4 +1,4 @@
-<div class="modal-body">
+<div class="modal-body clearfix">
     <form name="parcelform" ng-submit="parcelcrud(parcelform)" novalidate>
         <span ng-switch="exist">
             <span ng-switch-when="false">
@@ -26,12 +26,13 @@
                 <span ng-if="authorized">
                     <button ng-if="!exist" type="submit" class="btn btn-success-outline">Add Parcel</button>
                     <button ng-if="exist" type="submit" class="btn btn-primary-outline">Update</button>
-                    <a ng-if="parceldetails.status == '1'" ng-click="claimParcel(parceldetails.id)" class="pull-right btn btn-success">Claim</a>
+                    <!-- <button ng-if="exist" type="button" ng-click="deleteParcel(parceldetails.id)" class="btn btn-danger-outline">Delete</button> -->
+                    <a ng-if="parceldetails.status == '1'" ng-click="claimParcel(parceldetails.id)" class="btn btn-success">Claim</a>
                 </span>
             </span>
             <span ng-switch-when="false">
             </span>
         </span>
-        <a class="btn btn-secondary" ng-click="cancel()">Close</a>
+        <a class="btn btn-secondary pull-right" ng-click="cancel()">Close</a>
     </form>
 </div>

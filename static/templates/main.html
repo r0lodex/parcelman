@@ -1,56 +1,70 @@
-<section class="row filter">
-
-    <!-- FILTER BY KEYWORD -->
-    <div class="col-md-10">
-        <input class="form-control" ng-model="search" placeholder="Search by student's name or Tracking No">
+<section class="row">
+    <div class="col-md-4">
+        <form name="parcelform" class="parcelform" ng-submit="parcelcrud(parcelform)" novalidate>
+            <h3>Add A Parcel</h3>
+            <p class="text-muted">Use the form below to register a parcel. An SMS notification will be sent to recipients with phone number.</p>
+            <formgroup object="parceldetails" field="recipient_name" placeholder="Recipient's Name" icon="pm-head" type="text" inputgroup="true" required="true"></formgroup>
+            <formgroup object="parceldetails" field="recipient_phone" placeholder="Recipient's Phone No." icon="pm-phone" type="text" inputgroup="true" required="false"></formgroup>
+            <formgroup object="parceldetails" field="tracking_no" placeholder="Tracking No" icon="pm-location-2" type="text" inputgroup="true" required="false"></formgroup>
+            <formgroup object="parceldetails" field="parcel_type" placeholder="Parcel Type" icon="pm-layers" array="parcel_types" type="dropdown" required="false"></formgroup>
+            <formgroup object="parceldetails" field="notes" placeholder="Notes" icon="pm-paper-clip" type="textarea" required="false"></formgroup>
+            <button type="submit" class="btn btn-success-outline btn-block">Add Parcel</button>
+        </form>
     </div>
-
-    <!-- FILTER BY STATUS -->
-    <div class="col-md-2">
-        <select class="c-select" ng-model="status">
-            <option value="">All</option>
-            <option value="2">Claimed</option>
-            <option value="1">Unclaimed</option>
-        </select>
-    </div>
-</section>
-<section class="row" ng-if="parcels.length">
-    <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6" ng-repeat="p in parcels | filter: search | filter: { status: status} | orderBy: '-date_in'">
-        <div class="card card-block parcel-card">
-            <!-- CARD ACTION BUTTON -->
-            <div class="card-action">
-                <ul class="list-inline">
-                    <li ng-if="p.notes"><small><span class="pmicon pm-paper-clip"></span></small></li>
-                    <li><small><a ng-click="viewParcelDetails(p.id)"><span class="pmicon pm-open"></span></a></small></li>
-                </ul>
+    <div class="col-md-8">
+        <section class="row filter">
+            <!-- FILTER BY KEYWORD -->
+            <div class="col-md-8">
+                <input class="form-control" ng-model="search" placeholder="Search by student's name or Tracking No">
             </div>
 
-            <!-- PARCEL RECIPIENT -->
-            <h3 class="card-title" ng-bind="p.recipient_name"></h3>
-
-            <!-- STATUS AND TIME -->
-            <span ng-switch="p.status">
-                <small ng-switch-when="1" class="ellipsify text-muted">Received <span am-time-ago="p.date_in" am-full-date-threshold="4" am-full-date-format="D MMM YYYY"></span></small>
-                <small ng-switch-when="2" class="ellipsify text-success"><span class="pmicon pm-check"></span> Claimed <span am-time-ago="p.date_out" am-full-date-threshold="4" am-full-date-format="D MMM YYYY"></span></small>
-            </span>
-
-            <!-- PARCEL TYPE -->
-            <p class="card-text">
-                <span ng-switch="p.parcel_type">
-                    <span ng-switch-when="1"><span class="pmicon pm-box"></span> Package</span>
-                    <span ng-switch-when="2"><span class="pmicon pm-mail"></span> Letter</span>
-                    <span ng-switch-default><span class="pmicon pm-record"></span> Unknown Parcel</span>
-                </span>
-            </p>
-            <small class="ellipsify tracking_no" ng-if="p.tracking_no"><span class="pmicon pm-location-2"></span> <span ng-bind="p.tracking_no"></span></small>
-        </div>
+            <!-- FILTER BY STATUS -->
+            <div class="col-md-4">
+                <select class="c-select" ng-model="status">
+                    <option value="">All</option>
+                    <option value="2">Claimed</option>
+                    <option value="1">Unclaimed</option>
+                </select>
+            </div>
+        </section>
+        <section>
+            <table class="table table-bordered table-sm">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Recipient</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Tracking ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="p in parcels | filter: search | filter: { status: status} | orderBy: '-date_in'" ng-click="viewParcelDetails(p.id)">
+                        <td><span class="small tracking_no" ng-bind="$index + 1"></span></td>
+                        <td><span ng-bind="p.recipient_name"></span></td>
+                        <td>
+                            <small ng-switch="p.parcel_type">
+                                <span ng-switch-when="1"><span class="pmicon pm-box"></span> Package</span>
+                                <span ng-switch-when="2"><span class="pmicon pm-mail"></span> Letter</span>
+                                <span ng-switch-default><span class="pmicon pm-record"></span> Unknown Parcel</span>
+                            </small>
+                        </td>
+                        <td>
+                            <span ng-switch="p.status">
+                                <small ng-switch-when="1" class="text-muted">Received <span am-time-ago="p.date_in" am-full-date-threshold="4" am-full-date-format="D MMM YYYY"></span></small>
+                                <small ng-switch-when="2" class="text-success"><span class="pmicon pm-check"></span> Claimed <span am-time-ago="p.date_out" am-full-date-threshold="4" am-full-date-format="D MMM YYYY"></span></small>
+                            </span>
+                        </td>
+                        <td><small class="tracking_no"><span class="pmicon pm-location-2"></span> <span ng-bind="p.tracking_no || 'N/A'"></span></small></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        <section class="jumbotron no-items text-center" ng-if="!parcels.length">
+            <h1 class="text-muted">
+                <span class="pmicon pm-cross"></span><br>
+            </h1>
+            <p class="text-muted">There are no parcels.</p>
+        </section>
     </div>
-</section>
-
-<!-- If there are no parcels, this section will be displayed -->
-<section class="jumbotron no-items text-center" ng-if="!parcels.length">
-    <h1 class="text-muted">
-        <span class="pmicon pm-cross"></span><br>
-    </h1>
-    <p class="text-muted">There are no parcels.</p>
 </section>

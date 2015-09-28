@@ -16,11 +16,22 @@ var parcelMan = angular.module('parcelMan', [
 // Contoh URL: localhost/parcelman/#/parcel
 
     parcelMan.config(function($routeProvider) {
+        // View untuk admin
         $routeProvider.when('/', {
             controller: 'mainController',
             templateUrl: 'static/templates/main.html',
         });
-        $routeProvider.otherwise({ redirectTo: '/' });
+        // View untuk students
+        $routeProvider.when('/public', {
+            controller: 'publicController',
+            templateUrl: 'static/templates/public.html',
+        });
+        // View untuk report
+        $routeProvider.when('/report', {
+            controller: 'reportController',
+            templateUrl: 'static/templates/report.html',
+        });
+        $routeProvider.otherwise({ redirectTo: '/public' });
     });
 
 // ==================================================
