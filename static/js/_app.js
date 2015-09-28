@@ -106,7 +106,9 @@ var parcelMan = angular.module('parcelMan', [
     // Error Handler Service
     parcelMan.service('ERRORS', function(Notification) {
         return function(response) {
-            if (response.status != 404) {
+            if (response.status == 400) {
+                Notification.error({ message: response.data })
+            } else if (response.status != 404) {
                 Notification.error({ message: response.data.msg })
             }
         };

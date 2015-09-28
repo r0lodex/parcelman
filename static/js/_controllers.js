@@ -144,12 +144,12 @@ parcelMan.controller('parcelController', function($scope, $injector, $modalInsta
         if (a) {
             var b = a.trim() // Trim whitespaces
             if (b.length) {
+                $scope.parceldetails.recipient_id = b;
                 var obj = {
                     recipient_id: $scope.parceldetails.recipient_id,
                     status: "2",
                     date_out: Math.round((new Date()) / 1000)
                 }
-                $scope.parceldetails.recipient_id = b;
                 Parcel.update({ arg_a:parcel_id }, obj, function(response) {
                     $modalInstance.dismiss('cancel');
                     $scope.$emit('parcel:added', $scope.parceldetails);
