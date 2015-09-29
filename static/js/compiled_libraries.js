@@ -5,6 +5,8 @@
 // @codekit-append "../../components/angular-ui-notification/dist/angular-ui-notification.min.js";
 // @codekit-append "../../components/moment/min/moment.min.js";
 // @codekit-append "../../components/angular-moment/angular-moment.min.js";
+// @codekit-append "../../components/Chart.js/Chart.min.js";
+// @codekit-append "../../components/angular-chart.js/dist/angular-chart.min.js";
 
 
 /*

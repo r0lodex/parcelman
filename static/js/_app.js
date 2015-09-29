@@ -5,7 +5,8 @@ var parcelMan = angular.module('parcelMan', [
     'ngResource',      // API Resource Module
     'ui-notification', // Notification Popup Module
     'ui.bootstrap',    // Bootstrap Helpers
-    'angularMoment'    // Time display
+    'angularMoment',   // Time display
+    'chart.js'         // Chart JS
 ]);
 
 // ==================================================

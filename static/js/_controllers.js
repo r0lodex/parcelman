@@ -181,11 +181,31 @@ parcelMan.controller('publicController', function($scope, $location) {
     }
 })
 
-parcelMan.controller('reportController', function($scope, $location) {
+parcelMan.controller('reportController', function($scope, $location, Parcel) {
     if (!sessionStorage.uid) {
         $location.path('/public')
     } else {
+        var days = [
+            { day: 'Sunday', count: 0 },
+            { day: 'Monday', count: 0},
+            { day: 'Tuesday', count: 0},
+            { day: 'Wednesday', count: 0},
+            { day: 'Thursday', count: 0},
+            { day: 'Fridat', count: 0},
+            { day: 'Saturday', count: 0}
+        ]
 
+        var parcels = Parcel.query(function(res) {
+            res.forEach(function(v) {
+                var d = new Date(v.date_in*1000);
+                var w = d.getDay();
+                days[w].count++;
+            })
+            $scope.labels = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+            $scope.data = [
+                [days[1].count, days[2].count, days[3].count, days[4].count, days[5].count]
+            ];
+        })
     }
 })
 

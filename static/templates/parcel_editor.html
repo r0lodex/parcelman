@@ -24,9 +24,8 @@
         <span ng-switch="editable">
             <span ng-switch-when="true">
                 <span ng-if="authorized">
-                    <button ng-if="!exist" type="submit" class="btn btn-success-outline">Add Parcel</button>
-                    <button ng-if="exist" type="submit" class="btn btn-primary-outline">Update</button>
-                    <!-- <button ng-if="exist" type="button" ng-click="deleteParcel(parceldetails.id)" class="btn btn-danger-outline">Delete</button> -->
+                    <button type="submit" class="btn btn-primary-outline">Update</button>
+                    <button ng-if="exist" type="button" ng-click="deleteParcel(parceldetails.id)" class="btn btn-danger-outline">Delete</button>
                     <a ng-if="parceldetails.status == '1'" ng-click="claimParcel(parceldetails.id)" class="btn btn-success">Claim</a>
                 </span>
             </span>

@@ -12,7 +12,7 @@
 
     <form name="fform" ng-submit="forgot(fform)" ng-show="forgotForm" novalidate>
         <p class="lead text-center">Forgot Password</p>
-        <formgroup object="forgotitem" field="icno" placeholder="Your IC Number" type="text" required="true"></formgroup>
+        <formgroup object="forgotitem" field="icno" placeholder="Your IC Number" icon="pm-lock" type="text" inputgroup="true" required="true"></formgroup>
         <div class="text-center">
             <button type="submit" class="btn btn-info btn-sm">Reset Password</button>
             <a class="btn btn-secondary btn-sm" ng-click="forgotForm = !forgotForm">Cancel</a>
