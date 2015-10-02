@@ -12,25 +12,48 @@ parcelMan.run(function($rootScope, $location, $modal, Parcel, Student, Notificat
         $location.path('/');
         $rootScope.loggedIn = false;
     }
+
     $rootScope.parcels = Parcel.query();
+
+    function updateChart() {
+        Parcel.show({arg_a: 'report'}, function(res) {
+            $rootScope.options = {
+                bezierCurve: false,
+                maintainAspectRatio: true,
+                responsive: true,
+                scaleShowVerticalLines: false,
+                datasetFill : true,
+            };
+            $rootScope.labels = res.label;
+            $rootScope.data = [ res.received, res.claimed ];
+        })
+    }
 
     if (sessionStorage.uid) {
         $rootScope.students = Student.query();
+        updateChart();
     };
 
+    // Watches for changes in Parcel data
+    // ======================================
     $rootScope.$on('parcel:added', function() {
         Notification.success('Parcel successfully added to the record.');
         $rootScope.parcels = Parcel.query();
+        updateChart();
+    })
+    $rootScope.$on('parcel:updated', function() {
+        Notification.warning('Parcel has been claimed.');
+        $rootScope.students = Student.query();
+        updateChart();
     })
     $rootScope.$on('parcel:deleted', function() {
         Notification.success('Parcel has been deleted.');
         $rootScope.students = Student.query();
-    })
-    $rootScope.$on('parcel:claimed', function() {
-        Notification.warning('Parcel has been claimed.');
-        $rootScope.students = Student.query();
+        updateChart();
     })
 
+    // Watches for changes in Student data
+    // ======================================
     $rootScope.$on('student:added', function() {
         Notification.success('Student successfully added to the record.');
         $rootScope.students = Student.query();
@@ -92,18 +115,6 @@ parcelMan.controller('searchCtrl', function($scope, $routeParams, Parcel){
 })
 
 parcelMan.controller('dashboardCtrl', function($scope,  $modal, Parcel, ERRORS){
-    Parcel.show({arg_a: 'report'}, function(res) {
-        $scope.options = {
-            bezierCurve: false,
-            maintainAspectRatio: true,
-            responsive: true,
-            scaleShowVerticalLines: false,
-            datasetFill : true,
-        };
-        $scope.labels = res.label;
-        $scope.data = [ res.received, res.claimed ];
-    })
-
     $scope.showParcelForm = function(parcel_id) {
         $modal.open({
             templateUrl: 'templates/parcel-form.html',
@@ -181,6 +192,7 @@ parcelMan.controller('parcelCRUDCtrl', function($scope, $modalInstance, Parcel, 
                         parcel_type: $scope.parcel_types[0]
                     });
                     form.$setPristine()
+                    $modalInstance.dismiss('cancel')
                 }, ERRORS);
             } else {
                 var a = prompt('Please insert student\'s ID');
@@ -194,8 +206,8 @@ parcelMan.controller('parcelCRUDCtrl', function($scope, $modalInstance, Parcel, 
                             date_out: Math.round((new Date()) / 1000)
                         }
                         Parcel.claim({ arg_a:parcel_id }, obj, function(response) {
-                            $modalInstance.dismiss('cancel');
                             $scope.$emit('parcel:updated', $scope.parceldetails);
+                            $modalInstance.dismiss('cancel');
                         }, ERRORS)
                     } else {
                         alert('Student ID is required to claim parcels.');
