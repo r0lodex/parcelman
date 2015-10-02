@@ -17,17 +17,17 @@ var parcelMan = angular.module('parcelMan', [
 // Contoh URL: localhost/parcelman/#/parcel
 
     parcelMan.config(function($routeProvider) {
-        // View untuk admin
+        // Landing Page
         $routeProvider.when('/', {
             controller: 'landingCtrl',
             templateUrl: 'templates/landing.html',
         });
-        // View untuk students
+        // Search Page
         $routeProvider.when('/search/:query?', {
             controller: 'searchCtrl',
             templateUrl: 'templates/search.html',
         });
-        // View untuk report
+        // Admin Panel
         $routeProvider.when('/dashboard', {
             controller: 'dashboardCtrl',
             templateUrl: 'templates/dashboard.html',

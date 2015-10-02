@@ -25,7 +25,7 @@ parcelMan.run(function($rootScope, $location, $modal, Parcel, Student, Notificat
                 datasetFill : true,
             };
             $rootScope.labels = res.label;
-            $rootScope.data = [ res.received, res.claimed ];
+            $rootScope.datas = [ res.received, res.claimed ];
         })
     }
 
@@ -38,18 +38,15 @@ parcelMan.run(function($rootScope, $location, $modal, Parcel, Student, Notificat
     // ======================================
     $rootScope.$on('parcel:added', function() {
         Notification.success('Parcel successfully added to the record.');
-        $rootScope.parcels = Parcel.query();
-        updateChart();
+        $rootScope.parcels = Parcel.query(updateChart);
     })
     $rootScope.$on('parcel:updated', function() {
         Notification.warning('Parcel has been claimed.');
-        $rootScope.students = Student.query();
-        updateChart();
+        $rootScope.parcels = Parcel.query(updateChart);
     })
     $rootScope.$on('parcel:deleted', function() {
         Notification.success('Parcel has been deleted.');
-        $rootScope.students = Student.query();
-        updateChart();
+        $rootScope.parcels = Parcel.query(updateChart);
     })
 
     // Watches for changes in Student data
