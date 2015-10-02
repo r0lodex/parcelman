@@ -1,0 +1,67 @@
+<div id="Search">
+    <section class="search_bar">
+        <div class="container">
+            <div class="form-inline">
+                <div class="form-group">
+                    <div class="btn-group">
+                        <a class="btn btn-secondary" href="#/"><span class="pmicon pm-arrow-left"></span></a>
+                        <a class="btn btn-secondary" href="#/search"><span class="pmicon pm-reload"></span></a>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input class="form-control" ng-model="search_query" placeholder="Enter your search query.">
+                </div>
+                <div class="form-group">
+                    <select class="c-select" ng-model="status">
+                        <option value="">All</option>
+                        <option value="2">Claimed</option>
+                        <option value="1">Unclaimed</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <section class="search_result">
+            <p class="text-muted" ng-if="search_query">Showing results for <strong>"<span ng-bind="search_query"></span>"</strong></p>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Tracking No</th>
+                            <th>Recipient Name</th>
+                            <th>Status</th>
+                            <th>Date Received</th>
+                            <th>Date Claimed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="p in parcels | filter: search_query | filter: { status: status} | orderBy: '-date_in'">
+                            <td><span ng-bind="$index + 1"></span></td>
+                            <td>
+                                <span class="text-muted" ng-switch="p.parcel_type">
+                                    <span ng-switch-when="1"><span class="pmicon pm-box"></span> </span>
+                                    <span ng-switch-when="2"><span class="pmicon pm-mail"></span> </span>
+                                    <span ng-switch-default><span class="pmicon pm-record"></span> </span>
+                                </span> 
+                                <small class="font-monospace" ng-bind="p.tracking_no || 'N/A'"></small>
+                            </td>
+                            <td><span ng-bind="p.recipient_name"></span></td>
+                            <td>
+                                <span ng-switch="p.status">
+                                    <span ng-switch-when="1" class="text-warning">Received</span>
+                                    <span ng-switch-when="2" class="text-success">Claimed</span>
+                                    <span ng-switch-default>Status Error</span>
+                                </span>
+                            </td>
+                            <td><span am-time-ago="p.date_in" am-full-date-threshold="4" am-full-date-format="D MMM YYYY" ng-bind="p.date_in"></span></td>
+                            <td><span am-time-ago="p.date_out" am-full-date-threshold="4" am-full-date-format="D MMM YYYY" ng-bind="p.date_out || 'N/A'"></span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>

@@ -1,0 +1,21 @@
+<div class="modal-body">
+    <form name="loginform" ng-submit="login(loginform)" novalidate ng-hide="forgotForm">
+        <h3 class="text-center">Admin Login</h3>
+        <hr>
+        <formgroup object="loginitem" field="username" placeholder="Username" icon="pm-head" type="text" inputgroup="true" required="true" ></formgroup>
+        <formgroup object="loginitem" field="password" placeholder="Password" icon="pm-lock" type="password" inputgroup="true" required="true" ></formgroup>
+        <fieldset class="form-group text-center">
+            <small><a ng-click="forgotForm = !forgotForm">Forgot Password?</a></small>
+        </fieldset>
+        <button type="submit" class="btn btn-primary btn-block">Login</button>
+    </form>
+
+    <form name="fform" ng-submit="forgot(fform)" ng-show="forgotForm" novalidate>
+        <p class="lead text-center">Forgot Password</p>
+        <formgroup object="forgotitem" field="icno" placeholder="Your IC Number" icon="pm-lock" type="text" inputgroup="true" required="true"></formgroup>
+        <div class="text-center">
+            <button type="submit" class="btn btn-info btn-sm">Reset Password</button>
+            <a class="btn btn-secondary btn-sm" ng-click="forgotForm = !forgotForm">Cancel</a>
+        </div>
+    </form>
+</div>

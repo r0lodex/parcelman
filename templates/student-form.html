@@ -1,0 +1,14 @@
+<div class="modal-body">
+    <form name="parcelform" ng-submit="parcelcrud(parcelform)" novalidate>
+        <h3 class="text-center font-porter text-success">Add Student</h3>
+        <hr>
+        <formgroup object="studentdetails" field="student_name" placeholder="Student's Name" icon="pm-head" type="text" inputgroup="true" required="true"></formgroup>
+        <formgroup object="studentdetails" field="matrix_no" placeholder="Student's Phone No." icon="pm-phone" type="text" inputgroup="true" required="false"></formgroup>
+        <formgroup object="studentdetails" field="ic_no" placeholder="IC No" icon="pm-location-2" type="text" inputgroup="true" required="false"></formgroup>
+        <hr>
+        <div class="text-center">
+            <a class="btn btn-success">Add Student</a>
+            <a class="btn btn-secondary">Close</a>
+        </div>
+    </form>
+</div>

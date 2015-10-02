@@ -1,0 +1,79 @@
+<section id="Dashboard">
+    <div class="container">
+        <section class="parcel_chart">
+            <p class="text-center">
+                <span class="font-porter">Parcel Report</span><br>
+                <small class="text-muted">Parcel count by day</small>
+            </p>
+            <canvas id="line" class="chart chart-line" chart-data="data" chart-options="options" chart-labels="labels" height="100"></canvas>
+        </section>
+        <section class="parcel_list">
+            <tabset>
+                <tab heading="Parcels">
+                    <div class="parcel_filter form-inline">
+                        <div class="form-group pull-right">
+                            <a class="btn btn-primary" ng-click="showParcelForm()">Add Parcel</a>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" ng-model="search_query" placeholder="Enter your search query.">
+                        </div>
+                        <div class="form-group">
+                            <select class="c-select" ng-model="status">
+                                <option value="">All</option>
+                                <option value="2">Claimed</option>
+                                <option value="1">Unclaimed</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Tracking No</th>
+                                    <th>Recipient Name</th>
+                                    <th>Status</th>
+                                    <th>Received</th>
+                                    <th>Claimed</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="p in parcels | filter: search_query | filter: { status: status} | orderBy: '-date_in'" ng-click="showParcelForm(p.id)">
+                                    <td><span ng-bind="$index + 1"></span></td>
+                                    <td>
+                                        <span class="text-muted" ng-switch="p.parcel_type">
+                                            <span ng-switch-when="1"><span class="pmicon pm-box"></span> </span>
+                                            <span ng-switch-when="2"><span class="pmicon pm-mail"></span> </span>
+                                            <span ng-switch-default><span class="pmicon pm-record"></span> </span>
+                                        </span>
+                                        <small class="font-monospace" ng-bind="p.tracking_no || 'N/A'"></small>
+                                    </td>
+                                    <td><span ng-bind="p.recipient_name"></span></td>
+                                    <td>
+                                        <span ng-switch="p.status">
+                                            <span ng-switch-when="1" class="text-warning">Received</span>
+                                            <span ng-switch-when="2" class="text-success">Claimed</span>
+                                            <span ng-switch-default>Status Error</span>
+                                        </span>
+                                    </td>
+                                    <td><span am-time-ago="p.date_in" am-full-date-threshold="4" am-full-date-format="D MMM YYYY" ng-bind="p.date_in"></span></td>
+                                    <td><span am-time-ago="p.date_out" am-full-date-threshold="4" am-full-date-format="D MMM YYYY" ng-bind="p.date_out || 'N/A'"></span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </tab>
+                <tab heading="Students">
+                    <div class="parcel_filter form-inline">
+                        <div class="form-group pull-right">
+                            <a class="btn btn-success" ng-click="showStudentForm()">Add Student</a>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" ng-model="search_query_student" placeholder="Enter your search query.">
+                        </div>
+                    </div>
+                </tab>
+            </tabset>
+        </section>
+    </div>
+</section>

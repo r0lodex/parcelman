@@ -19,20 +19,20 @@ var parcelMan = angular.module('parcelMan', [
     parcelMan.config(function($routeProvider) {
         // View untuk admin
         $routeProvider.when('/', {
-            controller: 'mainController',
-            templateUrl: 'static/templates/main.html',
+            controller: 'landingCtrl',
+            templateUrl: 'templates/landing.html',
         });
         // View untuk students
-        $routeProvider.when('/public', {
-            controller: 'publicController',
-            templateUrl: 'static/templates/public.html',
+        $routeProvider.when('/search/:query?', {
+            controller: 'searchCtrl',
+            templateUrl: 'templates/search.html',
         });
         // View untuk report
-        $routeProvider.when('/report', {
-            controller: 'reportController',
-            templateUrl: 'static/templates/report.html',
+        $routeProvider.when('/dashboard', {
+            controller: 'dashboardCtrl',
+            templateUrl: 'templates/dashboard.html',
         });
-        $routeProvider.otherwise({ redirectTo: '/public' });
+        $routeProvider.otherwise({ redirectTo: '/' });
     });
 
 // ==================================================
@@ -56,8 +56,8 @@ var parcelMan = angular.module('parcelMan', [
             list: { method: 'GET', isArray: true },
             show: { method: 'GET', isArray: false },
             add: { method: 'POST', isArray: false },
-            update: { method: 'PUT', isArray: false },
-            claim: { method: 'DELETE', isArray: false }
+            claim: { method: 'PUT', isArray: false },
+            delete: { method: 'DELETE' }
         })
     });
 

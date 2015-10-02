@@ -23,25 +23,35 @@
         <meta name="msapplication-TileImage" content="static/img/favicon/ms-icon-144x144.png">
         <meta name="theme-color" content="#ffffff">
 
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, minimal-ui">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-title" content="Parcelman">
 
         <title>Parcelman &mdash; A Simple Parcel Manager</title>
 
-        <link rel="stylesheet" type="text/css" href="static/css/parcelman.css"><!--
-        Sebarang modifikasi untuk CSS boleh dibuat didalam berikut:
-        --> <link rel="stylesheet" type="text/css" href="static/css/extra.css">
+        <link rel="stylesheet" type="text/css" href="static/css/parcelman.css">
+
     </head>
     <body>
-        <div class="container">
-            <navigation></navigation>
-            <div class="content" ng-view></div>
-        </div>
-        <!-- This compiled_libraries contains all libraries required by the Parcelman app: -->
-        <script src="static/js/min/compiled_libraries-min.js"></script>
+        <nav class="navbar navbar-dark bg-inverse">
+            <div class="container">
+                <a class="navbar-brand" href="#/">
+                    <span class="text-muted font-porter">PARCELMAN</span>
+                </a>
+                <ul class="nav navbar-nav pull-right">
+                    <li class="nav-item">
+                        <span ng-switch="loggedIn">
+                            <a ng-switch-when="true" class="nav-link" ng-click="logout()"><span class="pmicon pm-power"></span> Logout</a>
+                            <a ng-switch-default class="nav-link" ng-click="showLoginForm()"><span class="pmicon pm-lock"></span> Login</a>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </nav>
 
-        <!-- Skrip berikut adalah pengawal keamanan sejagat. -->
+        <div class="content" ng-view></div>
+
+        <script src="static/js/min/compiled_libraries-min.js"></script>
         <script src="static/js/_app.js"></script>
         <script src="static/js/_controllers.js"></script>
         <script src="static/js/_directives.js"></script>
