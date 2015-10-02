@@ -1,14 +1,19 @@
 <div class="modal-body">
-    <form name="parcelform" ng-submit="parcelcrud(parcelform)" novalidate>
-        <h3 class="text-center font-porter text-success">Add Student</h3>
+    <form name="studentform" ng-submit="studentcrud(studentform)" novalidate>
+        <h3 class="text-center font-porter text-success" ng-if="!exist">Add Student</h3>
+        <h3 class="text-center font-porter text-success" ng-if="exist">Student Detail</h3>
         <hr>
-        <formgroup object="studentdetails" field="student_name" placeholder="Student's Name" icon="pm-head" type="text" inputgroup="true" required="true"></formgroup>
-        <formgroup object="studentdetails" field="matrix_no" placeholder="Student's Phone No." icon="pm-phone" type="text" inputgroup="true" required="false"></formgroup>
+        <formgroup object="studentdetails" field="fullname" placeholder="Fullname" icon="pm-head" type="text" inputgroup="true" required="true"></formgroup>
+        <formgroup object="studentdetails" field="matrix_no" placeholder="Matrix No" icon="pm-phone" type="text" inputgroup="true" required="false"></formgroup>
         <formgroup object="studentdetails" field="ic_no" placeholder="IC No" icon="pm-location-2" type="text" inputgroup="true" required="false"></formgroup>
         <hr>
         <div class="text-center">
-            <a class="btn btn-success">Add Student</a>
-            <a class="btn btn-secondary">Close</a>
+            <div class="btn-group">
+                <button class="btn btn-success" type="submit" ng-if="!exist">Add Student</button>
+                <button class="btn btn-success" type="submit" ng-if="exist">Update Student</button>
+                <button class="btn btn-danger" type="button" ng-if="exist" ng-click="deleteStudent()">Delete Student</button>
+                <a class="btn btn-secondary" ng-click="closeModal()">Close</a>
+            </div>
         </div>
     </form>
 </div>

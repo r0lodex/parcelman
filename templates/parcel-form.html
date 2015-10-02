@@ -1,6 +1,11 @@
 <div class="modal-body">
     <form name="parcelform" ng-submit="parcelcrud(parcelform)" novalidate>
-        <h3 class="text-center font-porter text-primary">Add Parcel</h3>
+        <h3 class="text-center font-porter text-primary" ng-if="!exist">Add Parcel</h3>
+        <h3 class="text-center font-porter text-primary" ng-if="exist">Parcel Details</h3>
+        <p class="text-center" ng-if="exist && parceldetails.date_out">
+            Claimed <span am-time-ago="parceldetails.date_in" am-full-date-threshold="4" am-full-date-format="D MMM YYYY"></span> 
+            by <span ng-bind="parceldetails.recipient_id || 'Anonymous'"></span>
+        </p>
         <hr>
         <formgroup object="parceldetails" field="recipient_name" placeholder="Recipient's Name" icon="pm-head" type="text" inputgroup="true" required="true"></formgroup>
         <formgroup object="parceldetails" field="recipient_phone" placeholder="Recipient's Phone No." icon="pm-phone" type="text" inputgroup="true" required="false"></formgroup>
@@ -17,37 +22,4 @@
             </div>
         </div>
     </form>
-<!--         <span ng-switch="exist">
-            <span ng-switch-when="false">
-                <h3>Add A Parcel</h3>
-                <p class="text-muted">Use the form below to register a parcel. An SMS notification will be sent to recipients with phone number.</p>
-            </span>
-            <span ng-switch-when="true">
-                <h3 class="no-margin">Parcel for <span class="text-capitalize" ng-bind="parceldetails.recipient_name || '(Enter a name)'"></span></h3>
-                <small ng-if="!parceldetails.date_out" class="text-muted">Received <span am-time-ago="parceldetails.date_in" am-full-date-threshold="4" am-full-date-format="D MMM YYYY"></span></small>
-                <small ng-if="parceldetails.date_out" class="text-success">
-                    Claimed <span am-time-ago="parceldetails.date_in" am-full-date-threshold="4" am-full-date-format="D MMM YYYY"></span> 
-                    by <span ng-bind="parceldetails.recipient_id || 'Anonymous'"></span>
-                </small>
-                <hr>
-            </span>
-        </span>
-        <formgroup object="parceldetails" field="recipient_name" placeholder="Recipient's Name" icon="pm-head" type="text" inputgroup="true" required="true"></formgroup>
-        <formgroup object="parceldetails" field="recipient_phone" placeholder="Recipient's Phone No." icon="pm-phone" type="text" inputgroup="true" required="false"></formgroup>
-        <formgroup object="parceldetails" field="tracking_no" placeholder="Tracking No" icon="pm-location-2" type="text" inputgroup="true" required="false"></formgroup>
-        <formgroup object="parceldetails" field="parcel_type" placeholder="Parcel Type" icon="pm-layers" array="parcel_types" type="dropdown" required="false"></formgroup>
-        <formgroup object="parceldetails" field="notes" placeholder="Notes" icon="pm-paper-clip" type="textarea" required="false"></formgroup>
-        <hr>
-        <span ng-switch="editable">
-            <span ng-switch-when="true">
-                <span ng-if="authorized">
-                    <button type="submit" class="btn btn-primary-outline">Update</button>
-                    <button ng-if="exist" type="button" ng-click="deleteParcel(parceldetails.id)" class="btn btn-danger-outline">Delete</button>
-                    <a ng-if="parceldetails.status == '1'" ng-click="claimParcel(parceldetails.id)" class="btn btn-success">Claim</a>
-                </span>
-            </span>
-            <span ng-switch-when="false">
-            </span>
-        </span>
-        <a class="btn btn-secondary pull-right" ng-click="cancel()">Close</a> -->
 </div>

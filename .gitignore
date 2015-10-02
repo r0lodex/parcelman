@@ -2,3 +2,4 @@ components
 .sass-cache
 config.codekit
 *.scss
+*.bak

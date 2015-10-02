@@ -3,7 +3,7 @@
         <section class="parcel_chart">
             <p class="text-center">
                 <span class="font-porter">Parcel Report</span><br>
-                <small class="text-muted">Parcel count by day</small>
+                <small class="text-muted">Received & Claim for the last 7 days.</small>
             </p>
             <canvas id="line" class="chart chart-line" chart-data="data" chart-options="options" chart-labels="labels" height="100"></canvas>
         </section>
@@ -25,7 +25,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="table-responsive">
+                    <div class="table-responsive" ng-if="parcels.length">
                         <table class="table table-striped">
                             <thead>
                                 <tr>
@@ -62,6 +62,9 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="empty-container text-center" ng-if="!parcels.length">
+                        <h3 class="font-porter">No data</h3>
+                    </div>
                 </tab>
                 <tab heading="Students">
                     <div class="parcel_filter form-inline">
@@ -71,6 +74,29 @@
                         <div class="form-group">
                             <input class="form-control" ng-model="search_query_student" placeholder="Enter your search query.">
                         </div>
+                    </div>
+                    <div class="table-responsive" ng-if="students.length">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>Matrix No</th>
+                                    <th>IC No</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="p in students | filter: search_query | filter: { status: status} | orderBy: '-fullname'" ng-click="showStudentForm(p.id)">
+                                    <td><span ng-bind="$index + 1"></span></td>
+                                    <td><span ng-bind="p.fullname"></span></td>
+                                    <td><span ng-bind="p.matrix_no"></span></td>
+                                    <td><span ng-bind="p.ic_no"></span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="empty-container text-center" ng-if="!students.length">
+                        <h3 class="font-porter">No data</h3>
                     </div>
                 </tab>
             </tabset>

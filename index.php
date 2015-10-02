@@ -51,6 +51,12 @@
 
         <div class="content" ng-view></div>
 
+        <footer>
+            <div class="container text-center">
+                Copyright &copy; 2015 Parcelman Sdn Bhd.
+            </div>
+        </footer>
+
         <script src="static/js/min/compiled_libraries-min.js"></script>
         <script src="static/js/_app.js"></script>
         <script src="static/js/_controllers.js"></script>

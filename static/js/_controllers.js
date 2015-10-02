@@ -1,4 +1,4 @@
-parcelMan.run(function($rootScope, $location, $modal) {
+parcelMan.run(function($rootScope, $location, $modal, Parcel, Student, Notification) {
     $rootScope.loggedIn = (sessionStorage.uid) ? true : false;
     $rootScope.showLoginForm = function() {
         $modal.open({
@@ -12,6 +12,37 @@ parcelMan.run(function($rootScope, $location, $modal) {
         $location.path('/');
         $rootScope.loggedIn = false;
     }
+    $rootScope.parcels = Parcel.query();
+
+    if (sessionStorage.uid) {
+        $rootScope.students = Student.query();
+    };
+
+    $rootScope.$on('parcel:added', function() {
+        Notification.success('Parcel successfully added to the record.');
+        $rootScope.parcels = Parcel.query();
+    })
+    $rootScope.$on('parcel:deleted', function() {
+        Notification.success('Parcel has been deleted.');
+        $rootScope.students = Student.query();
+    })
+    $rootScope.$on('parcel:claimed', function() {
+        Notification.warning('Parcel has been claimed.');
+        $rootScope.students = Student.query();
+    })
+
+    $rootScope.$on('student:added', function() {
+        Notification.success('Student successfully added to the record.');
+        $rootScope.students = Student.query();
+    })
+    $rootScope.$on('student:updated', function() {
+        Notification.warning('Student has been updated.');
+        $rootScope.students = Student.query();
+    })
+    $rootScope.$on('student:deleted', function() {
+        Notification.success('Student has been deleted.');
+        $rootScope.students = Student.query();
+    })
 })
 
 
@@ -61,58 +92,17 @@ parcelMan.controller('searchCtrl', function($scope, $routeParams, Parcel){
 })
 
 parcelMan.controller('dashboardCtrl', function($scope,  $modal, Parcel, ERRORS){
-    var days = [
-        { day: 'Sunday', received: 0, claimed: 0 },
-        { day: 'Monday', received: 0, claimed: 0},
-        { day: 'Tuesday', received: 0, claimed: 0},
-        { day: 'Wednesday', received: 0, claimed: 0},
-        { day: 'Thursday', received: 0, claimed: 0},
-        { day: 'Friday', received: 0, claimed: 0},
-        { day: 'Saturday', received: 0, claimed: 0}
-    ]
-
-    days[0]['Sunday']
-
-    function getParcels() {
-        $scope.parcels = Parcel.query(function(response) {
-            response.forEach(function(v) {
-                // Get count of received parcels
-                var date_in = new Date(v.date_in*1000);
-                var r_day = date_in.getDay();
-                days[r_day].received++
-
-                // Get count of claimed parcels
-                var date_out = (v.date_out) ? new Date(v.date_out*1000) : false;
-                if (date_out) {
-                    var c_day = date_out.getDay();
-                    days[c_day].claimed++
-                }
-            });
-
-            // Generate Charts
-            // ====================
-                $scope.options = {
-                    bezierCurve: false,
-                    maintainAspectRatio: true,
-                    responsive: true,
-                    scaleShowVerticalLines: false,
-                    datasetFill : false,
-                }
-
-                var _in = [], _out = []
-
-                days.forEach(function(v,i) {
-                    _in.push(v.received);
-                    _out.push(v.claimed);
-                })
-
-                $scope.labels = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                $scope.data = [ _in, _out ]
-            // ====================
-        }, ERRORS);
-    }
-
-    getParcels();
+    Parcel.show({arg_a: 'report'}, function(res) {
+        $scope.options = {
+            bezierCurve: false,
+            maintainAspectRatio: true,
+            responsive: true,
+            scaleShowVerticalLines: false,
+            datasetFill : true,
+        };
+        $scope.labels = res.label;
+        $scope.data = [ res.received, res.claimed ];
+    })
 
     $scope.showParcelForm = function(parcel_id) {
         $modal.open({
@@ -125,21 +115,20 @@ parcelMan.controller('dashboardCtrl', function($scope,  $modal, Parcel, ERRORS){
                 }
             }
         })
-    }
+    };
 
-    $scope.showStudentForm = function() {
+    $scope.showStudentForm = function(student_id) {
         $modal.open({
             templateUrl: 'templates/student-form.html',
             size: 'md',
             controller: 'studentCRUDCtrl',
+            resolve: {
+                student_id: function() {
+                    return student_id;
+                }
+            }
         })
     }
-
-    $scope.students = []
-
-    $scope.$on('parcel:added', function(a) {
-        getParcels();
-    });
 });
 
 parcelMan.controller('parcelCRUDCtrl', function($scope, $modalInstance, Parcel, parcel_id, ERRORS) {
@@ -167,6 +156,8 @@ parcelMan.controller('parcelCRUDCtrl', function($scope, $modalInstance, Parcel, 
                 } else {
                     $scope.parceldetails[v] = res[v]
                 }
+                $scope.parceldetails.date_out = res.date_out;
+                $scope.parceldetails.recipient_id = res.recipient_id;
                 $scope.parceldetails.status = res.status;
             })
         },ERRORS)
@@ -181,7 +172,7 @@ parcelMan.controller('parcelCRUDCtrl', function($scope, $modalInstance, Parcel, 
             if (!$scope.exist) {
                 // Create New Parcel
                 Parcel.add($scope.parceldetails, function(response){
-                    $scope.$broadcast('parcel:added', $scope.parceldetails); // Notify parent of this event.
+                    $scope.$emit('parcel:added', $scope.parceldetails); // Notify parent of this event.
                     // Default field values
                     $scope.parceldetails = new Parcel({
                         recipient_name: '',
@@ -204,7 +195,7 @@ parcelMan.controller('parcelCRUDCtrl', function($scope, $modalInstance, Parcel, 
                         }
                         Parcel.claim({ arg_a:parcel_id }, obj, function(response) {
                             $modalInstance.dismiss('cancel');
-                            $scope.$emit('parcel:added', $scope.parceldetails);
+                            $scope.$emit('parcel:updated', $scope.parceldetails);
                         }, ERRORS)
                     } else {
                         alert('Student ID is required to claim parcels.');
@@ -217,12 +208,13 @@ parcelMan.controller('parcelCRUDCtrl', function($scope, $modalInstance, Parcel, 
     }
 
     $scope.deleteParcel = function() {
-        Parcel.delete({ arg_a:parcel_id }, function(res) {
-            if (res.status == 202) {
-                Notification.success('Parcel Deleted.');
+        var a = confirm('Are you sure you want to delete this parcel?')
+        if (a) {
+            Parcel.delete({ arg_a:parcel_id }, function(res) {
+                $scope.$emit('parcel:deleted')
                 $modalInstance.dismiss('cancel')
-            }
-        }, ERRORS)
+            }, ERRORS)
+        };
     };
 
     $scope.closeModal = function() {
@@ -230,4 +222,61 @@ parcelMan.controller('parcelCRUDCtrl', function($scope, $modalInstance, Parcel, 
     }
 
 })
-parcelMan.controller('studentCRUDCtrl', function($scope, $modalInstance) {})
+parcelMan.controller('studentCRUDCtrl', function($scope, $modalInstance, Student, student_id, ERRORS) {
+    // Default field values
+    $scope.studentdetails = new Student({
+        fullname: '',
+        ic_no: '',
+        matrix_no: '',
+    });
+
+    $scope.exist = (student_id) ? true:false;
+
+    if (student_id) {
+        Student.show({ arg_a: student_id }, function(res) {
+            console.log(res)
+            Object.keys($scope.studentdetails).forEach(function(v) {
+                $scope.studentdetails[v] = res[v]
+            })
+        },ERRORS)
+    }
+
+    $scope.studentcrud = function(form) {
+        if (form.$invalid) {
+            $scope.$broadcast('field:invalid');
+        } else {
+            if (!$scope.exist) {
+                // Create New Parcel
+                Student.add($scope.studentdetails, function(response){
+                    $scope.$emit('student:added', $scope.studentdetails); // Notify parent of this event.
+                    // Default field values
+                    $scope.studentdetails = new Student({
+                        fullname: '',
+                        ic_no: '',
+                        matrix_no: '',
+                    });
+                    $modalInstance.dismiss('cancel');
+                }, ERRORS);
+            } else {
+                Student.update({ arg_a:student_id }, $scope.studentdetails, function(response) {
+                    $modalInstance.dismiss('cancel');
+                    $scope.$emit('student:updated', $scope.studentdetails);
+                }, ERRORS)
+            }
+        }
+    }
+
+    $scope.deleteStudent = function() {
+        var a = confirm('Are you sure you want to delete this student?')
+        if (a) {
+            Student.delete({ arg_a:student_id }, function(res) {
+                $scope.$emit('student:deleted')
+                $modalInstance.dismiss('cancel')
+            }, ERRORS)
+        }
+    };
+
+    $scope.closeModal = function() {
+        $modalInstance.dismiss('cancel');
+    }
+})

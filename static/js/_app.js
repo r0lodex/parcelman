@@ -61,6 +61,17 @@ var parcelMan = angular.module('parcelMan', [
         })
     });
 
+    // Student Factory
+    parcelMan.factory('Student', function($resource) {
+        return $resource('server/api/student/:arg_a/:arg_b', { arg_a: '@arg_a', arg_b: '@arg_b' }, {
+            add: { method: 'POST' },
+            list: { method: 'GET', isArray: true },
+            show: { method: 'GET', isArray: false },
+            update: { method: 'PUT' },
+            delete: { method: 'DELETE' }
+        })
+    });
+
 
 // ==================================================
 // APP SETTINGS
@@ -107,10 +118,14 @@ var parcelMan = angular.module('parcelMan', [
     // Error Handler Service
     parcelMan.service('ERRORS', function(Notification) {
         return function(response) {
-            if (response.status == 400) {
-                Notification.error({ message: response.data })
-            } else if (response.status != 404) {
-                Notification.error({ message: response.data.msg })
+            try {
+                if (response.status == 400) {
+                    Notification.error({ message: response.data })
+                } else if (response.status != 404) {
+                    Notification.error({ message: response.data.msg })
+                }
+            } catch(e) {
+                Notification.error('There was something wrong. Please try again')
             }
         };
     })
