@@ -29,10 +29,16 @@ parcelMan.run(function($rootScope, $location, $modal, Parcel, Student, Notificat
         })
     }
 
-    if (sessionStorage.uid) {
+    $rootScope.$on('$routeChangeSuccess', function () {
+        $rootScope.currentPath = $location.path();
+        console.log($rootScope.currentPath)
+    });
+
+    $rootScope.$on('loggedIn', function() {
         $rootScope.students = Student.query();
+        $rootScope.loggedIn = true;
         updateChart();
-    };
+    })
 
     // Watches for changes in Parcel data
     // ======================================
@@ -82,8 +88,7 @@ parcelMan.controller('authCtrl', function($rootScope, $scope, $modalInstance, $l
 
                 // Events to execute upon successful login
                 $modalInstance.dismiss('cancel');
-                $rootScope.$broadcast('loggedIn', response);
-                $rootScope.loggedIn = true;
+                $scope.$emit('loggedIn', response);
                 Notification.success('You are now logged in.');
                 $location.path('/dashboard')
             }, ERRORS)

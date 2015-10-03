@@ -39,6 +39,9 @@
                     <span class="text-muted font-porter">PARCELMAN</span>
                 </a>
                 <ul class="nav navbar-nav pull-right">
+                    <li class="nav-item" ng-if="currentPath != '/dashboard' && loggedIn">
+                        <a class="nav-link" href="#/dashboard">Dashboard</a>
+                    </li>
                     <li class="nav-item">
                         <span ng-switch="loggedIn">
                             <a ng-switch-when="true" class="nav-link" ng-click="logout()"><span class="pmicon pm-power"></span> Logout</a>
